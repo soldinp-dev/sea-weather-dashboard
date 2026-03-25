@@ -2,6 +2,7 @@
 const CONFIG = {
     STATION_ID: 'KSEA',
     API_ENDPOINT: 'https://aviationweather.gov/api/data/metar',
+    CORS_PROXY: 'https://cors-anywhere.herokuapp.com/',
     REFRESH_INTERVAL: 5 * 60 * 1000, // 5 minutes
     HOURS_BACK: 24
 };
@@ -55,19 +56,28 @@ async function fetchAndParseMetar() {
         const startStr = formatTimeForAPI(startTime);
         const endStr = formatTimeForAPI(now);
 
-        // Fetch data
-        const response = await fetch(
-            `${CONFIG.API_ENDPOINT}?ids=${CONFIG.STATION_ID}&format=json&hours=${CONFIG.HOURS_BACK}`
-        );
+        // Try to fetch data with CORS proxy first, then fallback
+        let response;
+        try {
+            response = await fetch(
+                `${CONFIG.CORS_PROXY}${CONFIG.API_ENDPOINT}?ids=${CONFIG.STATION_ID}&format=json&hours=${CONFIG.HOURS_BACK}`
+            );
+        } catch (e) {
+            // Fallback to direct fetch (may not work due to CORS)
+            console.warn('CORS proxy failed, trying direct fetch...');
+            response = await fetch(
+                `${CONFIG.API_ENDPOINT}?ids=${CONFIG.STATION_ID}&format=json&hours=${CONFIG.HOURS_BACK}`
+            );
+        }
 
         if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
+            throw new Error(`API error: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
 
         if (!data.ObstationMetar || data.ObstationMetar.length === 0) {
-            throw new Error('No METAR data returned');
+            throw new Error('No METAR data returned from aviationweather.gov');
         }
 
         // Parse all METAR reports
@@ -77,7 +87,7 @@ async function fetchAndParseMetar() {
             throw new Error('Could not parse any METAR reports');
         }
 
-        // Sort by time (newest first for display, but we analyze oldest first for high)
+        // Sort by time (newest first for display)
         metarReports.sort((a, b) => new Date(b.time) - new Date(a.time));
 
         // Update UI
@@ -99,7 +109,7 @@ async function fetchAndParseMetar() {
     } catch (error) {
         console.error('METAR fetch error:', error);
         statusEl.classList.add('error');
-        statusEl.textContent = `❌ Error: ${error.message}`;
+        statusEl.textContent = `❌ Error: ${error.message}. Check browser console for details.`;
     }
 }
 
