@@ -1,14 +1,19 @@
-{"version": 2,
- "builds": [
- {
- "src": "api/*.js",
- "use": "@vercel/node"
- }
- ],
- "routes": [
- {
- "src": "/api/(.*)",
- "dest": "api/$1"
- }
- ]
+{
+  "buildCommand": "echo 'Static site - no build needed'",
+  "outputDirectory": ".",
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        }
+      ]
+    }
+  ]
 }
