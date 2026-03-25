@@ -1,1 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEA Weather Dashboard - Polymarket Monitoring</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>🌡️ Seattle-Tacoma Airport (SEA) Weather Dashboard</h1>
+                <p class="subtitle">Real-Time METAR Monitoring for Polymarket Bet Resolution</p>
+            </div>
+            <div class="controls">
+                <label class="toggle-label">
+                    <input type="checkbox" id="autoRefreshToggle" checked>
+                    <span>Auto-Refresh (5 min)</span>
+                </label>
+                <button id="manualRefreshBtn" class="refresh-btn">🔄 Refresh Now</button>
+            </div>
+        </header>
 
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Intraday High</div>
+                <div class="stat-value">
+                    <span class="rounded" id="highTempRounded">--°F</span>
+                    <span class="precise" id="highTempPrecise">(--.-°F)</span>
+                </div>
+                <div class="stat-note">WU Resolution: <strong id="wuResolution">--°F</strong></div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Latest Temperature</div>
+                <div class="stat-value">
+                    <span class="rounded" id="latestTempRounded">--°F</span>
+                    <span class="precise" id="latestTempPrecise">(--.-°F)</span>
+                </div>
+                <div class="stat-note">Last METAR: <span id="lastMetarTime">--:--</span> UTC</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Wind Speed</div>
+                <div class="stat-value" id="windSpeed">-- kt</div>
+                <div class="stat-note">Direction: <span id="windDir">--</span></div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Dew Point</div>
+                <div class="stat-value" id="dewPoint">--°F</div>
+                <div class="stat-note">Humidity indicator</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Visibility</div>
+                <div class="stat-value" id="visibility">-- SM</div>
+                <div class="stat-note">Statute miles</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Sky Condition</div>
+                <div class="stat-value" id="skyCondition">--</div>
+                <div class="stat-note">Cloud coverage</div>
+            </div>
+        </div>
+
+        <div class="metar-section">
+            <h2>Last 24 Hours Hourly METAR Data</h2>
+            <div id="metarStatus" class="status-message">Loading METAR data...</div>
+            <div class="table-wrapper">
+                <table id="metarTable" class="metar-table">
+                    <thead>
+                        <tr>
+                            <th>Time (UTC)</th>
+                            <th>Temp (Rounded)</th>
+                            <th>Temp (Precise)</th>
+                            <th>Wind</th>
+                            <th>Dewpoint</th>
+                            <th>Visibility</th>
+                            <th>Sky Condition</th>
+                            <th>Raw METAR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metarTableBody">
+                        <tr><td colspan="8" class="loading">Fetching METAR reports...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p>Data source: <a href="https://aviationweather.gov" target="_blank">aviationweather.gov</a></p>
+            <p>Last updated: <span id="lastUpdated">Never</span></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
