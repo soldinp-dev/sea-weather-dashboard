@@ -1,0 +1,9 @@
+{
+  "name": "sea-weather-dashboard",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Real-time METAR monitoring for SEA airport",
+  "scripts": {
+    "dev": "echo 'Static site with serverless functions'"
+  }
+}
