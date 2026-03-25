@@ -1,26 +1,31 @@
-'use strict';
+export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-const https = require('https');
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
 
-exports.handler = async (event) => {
-    const url = 'https://api.weather.com/v1/metar';
+  const { hours = 24 } = req.query;
 
-    return new Promise((resolve, reject) => {
-        https.get(url, (resp) => {
-            let data = '';
+  try {
+    const response = await fetch(`https://aviationweather.gov/api/data/metar?ids=KSEA&format=json&hours=${hours}`);
+    
+    if (!response.ok) {
+      throw new Error(`aviationweather.gov API error: ${response.status}`);
+    }
 
-            // A chunk of data has been received.
-            resp.on('data', (chunk) => {
-                data += chunk;
-            });
-
-            // The whole response has been received. Print out the result.
-            resp.on('end', () => {
-                resolve({ statusCode: 200, body: data });
-            });
-
-        }).on('error', (err) => {
-            reject({ statusCode: 500, body: err.message });
-        });
+    const data = await response.json();
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('METAR fetch error:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch METAR data',
+      message: error.message 
     });
-};
+  }
+}
