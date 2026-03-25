@@ -76,12 +76,15 @@ async function fetchAndParseMetar() {
 
         const data = await response.json();
 
-        if (!data.ObstationMetar || data.ObstationMetar.length === 0) {
-            throw new Error('No METAR data returned from aviationweather.gov');
-        }
+     // Handle both array and object response formats
+const reports = Array.isArray(data) ? data : (data.ObstationMetar || data.reports || []);
 
-        // Parse all METAR reports
-        const metarReports = data.ObstationMetar.map(metar => parseMetar(metar)).filter(Boolean);
+if (!reports || reports.length === 0) {
+    throw new Error('No METAR data returned from aviationweather.gov');
+}
+
+// Parse all METAR reports
+const metarReports = reports.map(metar => parseMetar(metar)).filter(Boolean);
 
         if (metarReports.length === 0) {
             throw new Error('Could not parse any METAR reports');
